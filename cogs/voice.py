@@ -14,6 +14,21 @@ class Voice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member, before, after):
+        if member.id != self.bot.user.id:
+            return
+        if before.channel and not after.channel:
+            t = None
+            for key, server in self.bot.voice_hooks.items():
+                if server.voice_channel.id == before.channel.id:
+                    t = server
+                    break
+            if t is None:
+                return
+            await t.close(True)
+            await t.text_channel.send('強制的に落とされたため、終了します。')
+
     @commands.command()
     async def join(self, ctx):
         if ctx.guild is None:
@@ -23,7 +38,7 @@ class Voice(commands.Cog):
         voice_state = ctx.author.voice
 
         if (not voice_state) or (not voice_state.channel):
-            await ctx.send("ボイスチャンネルに接続した状態で動かしてください。")
+            await ctx.send("ボイスチャンネルに接続した状態で実行してください。")
             return
 
         channel = voice_state.channel
@@ -34,9 +49,10 @@ class Voice(commands.Cog):
             return
 
         server = VoiceServer(self.bot, voice_client, channel, ctx.channel)
-        await server.setup()
         self.bot.voice_hooks[ctx.channel.id] = server
-        await ctx.send("接続しました。")
+        r = await server.setup()
+        if r:
+            await ctx.send("接続しました。")
 
     @commands.command()
     async def leave(self, ctx):

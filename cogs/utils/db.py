@@ -7,6 +7,7 @@ class DB:
         self.db = self.client['bard_test']
         self.users = self.db['users']
         self.user_dict = self.db['user_dict']
+        self.char_count = self.db['char_count']
 
     async def get_user_setting(self, user_id):
         user_id = str(user_id)
@@ -66,4 +67,27 @@ class DB:
             {'__id': str(guild_id)},
             r
         )
+
+    async def register_char_count(self, guild_id):
+        await self.char_count.insert_one(
+            {'id': str(guild_id), 'count': 3000}
+        )
+
+    async def get_char_count(self, guild_id):
+        r = await self.char_count.find_one({'id': str(guild_id)})
+        if r is None:
+            await self.register_char_count(guild_id)
+            return 3000
+        return r['count']
+
+    async def spend_char(self, guild_id, count):
+        now = await self.get_char_count(guild_id)
+        if now - count < 0:
+            return False
+        await self.char_count.replace_one(
+            {'id': str(guild_id)},
+            {'id': str(guild_id), 'count': now - count}
+        )
+        return True
+
 

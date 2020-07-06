@@ -27,11 +27,14 @@ class TTS(commands.Cog):
             return
         text = message.clean_content
         text = re.sub(r"https?://[\w!?/+\-_~;.,*&@#$%()'[\]]+", "URL省略、", text)
+
+        text = re.sub(r"[^a-zA-Z]([wｗW]+)[^a-zA-Z]", "わら", text)
+        text = re.sub(r"^([wｗ]+)$", "わら", text)
+
         for key, value in message_dict.items():
             text = text.replace(key, value)
 
-        await asyncio.sleep(random.randrange(1, 3)/10)
-        await self.bot.voice_hooks[message.channel.id].put([str(message.author.id).encode(), text.encode(), message.author])
+        await self.bot.voice_hooks[message.channel.id].put([str(message.author.id).encode(), text, message.author])
 
 
 def setup(bot):
