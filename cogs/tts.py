@@ -19,12 +19,19 @@ class TTS(commands.Cog):
             return
         if message.author.bot:
             return
+        if not message.content:
+            return
         if message.content.startswith("bard::"):
             return
         if message.content.startswith(";"):
             return
         text = message.clean_content
         text = re.sub(r"https?://[\w!?/+\-_~;.,*&@#$%()'[\]]+", "URL省略、", text)
+        for emoji_name in re.findall(r"<:(.+):[0-9]+>", text):
+            text = re.sub(rf"<:{emoji_name}:[0-9]+>", emoji_name, text)
+
+        for move_emoji_name in re.findall(r"<a:(.+):[0-9]+>", text):
+            text = re.sub(rf"<a:{move_emoji_name}:[0-9]+>", move_emoji_name, text)
 
         text = re.sub(r"[^a-zA-Z]([wｗW]+)[^a-zA-Z]", "わら", text)
         text = re.sub(r"^([wｗ]+)$", "わら", text)

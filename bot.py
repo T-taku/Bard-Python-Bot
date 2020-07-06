@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from .cogs.utils.firebase import FireStore
+from cogs.utils.firebase import FireStore
 
 
 class Bard(commands.Bot):
