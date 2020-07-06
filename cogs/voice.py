@@ -2,7 +2,6 @@ from discord.ext import commands
 from .utils.voiceserver import VoiceServer
 import discord
 
-
 voice_setting = """
 `voice <音声の種類(A,B,C,Dのいずれか)>` で音声の種類を変更できます。
 `speed <スピード>` でスピードの変更ができます。デフォルトは1.0です。
@@ -46,6 +45,12 @@ class Voice(commands.Cog):
             voice_client = await channel.connect()
         except discord.errors.ClientException:
             await ctx.send('すでに接続されています。')
+            return
+
+        g = await self.bot.firestore.get_guild(ctx.guild.id)
+        if g['count'] == 0:
+            await ctx.send("申し訳ございません。今月の利用可能文字数を超えてしまいました。"
+                           "\nまだご利用になりたい場合は、公式サイトより文字数を購入してください。")
             return
 
         server = VoiceServer(self.bot, voice_client, channel, ctx.channel)

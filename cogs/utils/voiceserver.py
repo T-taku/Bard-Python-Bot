@@ -61,9 +61,9 @@ class VoiceServer:
                 text = text + "。"
                 if len(text) > 150:
                     text = text[:150] + "、以下略。"
-                if not await self.bot.db.spend_char(guild.id, len(text)):
+                if not await self.bot.firestore.spend_char(guild.id, len(text)):
                     await self.text_channel.send("申し訳ございません。今月の利用可能文字数を超えてしまいました。"
-                                                 "\nまだご利用になりたい場合は、公式サイトより購入してください。")
+                                                 "\nまだご利用になりたい場合は、公式サイトより文字数を購入してください。")
                     await self.close(force=True)
                     return
 
