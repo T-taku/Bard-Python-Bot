@@ -38,11 +38,18 @@ class VoiceServer:
                 item = await self.queue.get()
                 text = item[1]
                 user = item[2]
+                guild = user.guild
                 name = user.nick or user.name
                 if self.before_user_id != user.id:
                     text = (name+"、").encode() + text
                 self.before_user_id = user.id
 
+                # user dict
+                d = await self.bot.db.get_user_dict(guild.id)
+                del d['__id']
+                for key, value in d.items():
+                    text = text.replace(key.encode(), value.encode())
+                text = text + "。".encode()
                 self.writer.write(item[0])
                 self.writer.write(text)
                 data = b''

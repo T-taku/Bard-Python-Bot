@@ -52,6 +52,7 @@ async def c(ctx):
 
 bot.load_extension('cogs.voice')
 bot.load_extension('cogs.tts')
+bot.load_extension('cogs.userdict')
 
 bot.db = DB()
 

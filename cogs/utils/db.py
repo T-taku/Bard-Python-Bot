@@ -38,20 +38,32 @@ class DB:
 
     async def register_user_dict(self, guild_id):
         await self.user_dict.insert_one(
-            {'id': str(guild_id)}
+            {'__id': str(guild_id)}
         )
 
     async def get_user_dict(self, guild_id):
-        r = await self.user_dict.find_one({'id': guild_id})
+        r = await self.user_dict.find_one({'__id': str(guild_id)})
         if r is None:
             await self.register_user_dict(guild_id)
-            return {}
+            return {'__id': str(guild_id)}
+        del r['_id']
         return r
 
     async def set_user_dict(self, guild_id, key, value):
         r = await self.get_user_dict(guild_id)
         r[key] = value
-        await self.users.replace_one(
-            {'id': str(guild_id)},
+        await self.user_dict.replace_one(
+            {'__id': str(guild_id)},
             r
         )
+
+    async def remove_user_dict(self, guild_id, key):
+        r = await self.get_user_dict(guild_id)
+        if key not in r.keys():
+            return False
+        del r[key]
+        await self.user_dict.replace_one(
+            {'__id': str(guild_id)},
+            r
+        )
+
