@@ -14,6 +14,10 @@ class Voice(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        await self.bot.firestore.get_guild(guild.id)
+
+    @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         if member.id != self.bot.user.id:
             return

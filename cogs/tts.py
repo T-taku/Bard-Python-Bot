@@ -33,8 +33,8 @@ class TTS(commands.Cog):
         for move_emoji_name in re.findall(r"<a:(.+):[0-9]+>", text):
             text = re.sub(rf"<a:{move_emoji_name}:[0-9]+>", move_emoji_name, text)
 
-        text = re.sub(r"[^a-zA-Z]([wｗW]+)[^a-zA-Z]", "わら", text)
-        text = re.sub(r"^([wｗ]+)$", "わら", text)
+        text = re.sub(r"[^a-zA-Z]([w]+)[^a-zA-Z]", "わら", text)
+        text = re.sub(r"^([w]+)$", "わら", text)
 
         for key, value in message_dict.items():
             text = text.replace(key, value)
