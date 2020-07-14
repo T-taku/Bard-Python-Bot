@@ -1,8 +1,9 @@
 import firebase_admin
+from google.cloud.firestore_v1 import Increment
+from functools import partial
 from firebase_admin import credentials
 from firebase_admin import firestore
 import concurrent.futures
-
 
 cred = credentials.Certificate("bard-bot-firestore.json")
 firebase_admin.initialize_app(cred)
@@ -28,12 +29,13 @@ class FireStore:
         :param guild_id: string or int
         :return: dict
         """
-        guild = self.get_document(guild_id)
-        r = await self.bot.loop.run_in_executor(self.executor, guild.get)
+        docguild = self.get_document(guild_id)
+        r = await self.bot.loop.run_in_executor(self.executor, docguild.get)
         d = r.to_dict()
         if d is None:
-            await self.bot.loop.run_in_executor(self.executor, guild.set, {'count': 3000})
-            return {'count': 3000}
+            data = {'count': 3000, 'subscribe': 0}
+            await self.bot.loop.run_in_executor(self.executor, docguild.set, data)
+            return data
         return d
 
     async def update_guild(self, guild_id, data):
@@ -47,6 +49,6 @@ class FireStore:
             await self.update_guild(guild_id, guild)
             return False
 
-        guild['count'] -= count
-        await self.update_guild(guild_id, guild)
+        docguild = self.get_document(guild_id)
+        await self.bot.loop.run_in_executor(self.executor, partial(docguild.set, {'count': Increment(-count)}, merge=True))
         return True
