@@ -17,10 +17,9 @@ class VoiceServer:
         self.before_user_id = None
 
     async def close(self, force=False):
+        self.voice_client.stop()
         if self.writer is not None:
             self.writer.close()
-        if self.voice_client.is_playing():
-            await self.voice_client.stop()
         if force:
             await self.voice_client.disconnect(force=True)
             del self.bot.voice_hooks[self.text_channel.id]
@@ -43,14 +42,18 @@ class VoiceServer:
         try:
             while not self.bot.is_closed():
                 while self.voice_client.is_playing():
+                    print('waiting')
                     await asyncio.sleep(0.5)
+                await asyncio.sleep(0.2)
                 item = await self.queue.get()
+                await asyncio.sleep(0.3)
                 text = item[1]
                 user = item[2]
                 guild = user.guild
                 name = user.nick or user.name
                 if self.before_user_id != user.id:
-                    text = name+"、" + text
+                    if self.bot.guild_setting[guild.id]['name']:
+                        text = name+"、" + text
                 self.before_user_id = user.id
 
                 # user dict
@@ -68,12 +71,15 @@ class VoiceServer:
                     return
 
                 self.writer.write(item[0])
+                await self.writer.drain()
                 self.writer.write(text.encode())
+                await self.writer.drain()
                 data = b''
                 while True:
-                    i = await self.reader.read(8192)
+                    i = await self.reader.read(4096)
+                    l = len(i)
                     data += i
-                    if len(i) != 8192:
+                    if l != 4096:
                         break
 
                 source = discord.PCMAudio(io.BytesIO(audioop.tostereo(data, 2, 1, 1)))

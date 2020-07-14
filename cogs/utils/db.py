@@ -8,6 +8,9 @@ class DB:
         self.users = self.db['users']
         self.user_dict = self.db['user_dict']
         self.char_count = self.db['char_count']
+        self.guild_emoji = self.db['guild_emoji']
+        self.guild_bot = self.db['guild_bot']
+        self.guild_name = self.db['guild_name']
 
     async def get_user_setting(self, user_id):
         user_id = str(user_id)
@@ -66,4 +69,27 @@ class DB:
         await self.user_dict.replace_one(
             {'__id': str(guild_id)},
             r
+        )
+
+    async def get_guild_setting(self, name, guild_id):
+        doc = getattr(self, f'guild_{name}')
+        r = await doc.find_one({'id': str(guild_id)})
+        if r is None:
+            if name == 'emoji':
+                return True
+            elif name == 'name':
+                return True
+            return False
+
+        return r['value']
+
+    async def set_guild_setting(self, name, guild_id, value):
+        doc = getattr(self, f'guild_{name}')
+        r = await doc.find_one({'id': str(guild_id)})
+        if r is None:
+            await doc.insert_one({'id': str(guild_id), 'value': value})
+            return
+        await doc.replace_one(
+            {'id': str(guild_id)},
+            {'id': str(guild_id), 'value': value}
         )
