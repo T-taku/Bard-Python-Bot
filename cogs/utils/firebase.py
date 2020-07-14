@@ -44,11 +44,10 @@ class FireStore:
 
     async def spend_char(self, guild_id, count):
         guild = await self.get_guild(guild_id)
+        docguild = self.get_document(guild_id)
         if guild['count'] - count < 0:
-            guild['count'] = 0
-            await self.update_guild(guild_id, guild)
+            await self.bot.loop.run_in_executor(self.executor, partial(docguild.set, {'count': 0}, merge=True))
             return False
 
-        docguild = self.get_document(guild_id)
         await self.bot.loop.run_in_executor(self.executor, partial(docguild.set, {'count': Increment(-count)}, merge=True))
         return True
