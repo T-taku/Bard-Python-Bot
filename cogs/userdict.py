@@ -7,11 +7,11 @@ class MyPagenator(Paginator):
     def __init__(self, client, max_page, data):
         super().__init__(client, max_page)
         self.data = data
-        self.tags = sorted(list(self.data))
+        self.tags = sorted(list(self.data.keys()))
 
     def get_embed(self, page):
 
-        target_tags = self.tags[page * 15: page * 15 + 1]
+        target_tags = self.tags[page * 15: page * 15 + 15]
         target = [f'{i}: {self.data[i]}' for i in target_tags]
         desc = "\n".join(target)
 

@@ -80,6 +80,15 @@ class VoiceSetting(commands.Cog):
         await self.bot.update_guild_setting(ctx.guild.id)
         await ctx.send(f'絵文字を読み上げるかの設定を`{yomiage(r)}`から{yomiage(not r)}に変更しました。')
 
+    @setting.command()
+    async def limit(self, ctx, limit: int):
+        if limit <= 0 or limit > 2000:
+            await ctx.send('その値は指定できません。')
+            return
+        r = await self.bot.db.set_limit(ctx.guild.id, limit)
+        await self.bot.update_guild_setting(ctx.guild.id)
+        await ctx.send(f'最大読み上げ文字数を{r}から{limit}に変更しました。')
+
 
 def setup(bot):
     return bot.add_cog(VoiceSetting(bot))

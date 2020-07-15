@@ -11,6 +11,7 @@ class DB:
         self.guild_emoji = self.db['guild_emoji']
         self.guild_bot = self.db['guild_bot']
         self.guild_name = self.db['guild_name']
+        self.guild_limit = self.db['guild_limit']
 
     async def get_user_setting(self, user_id):
         user_id = str(user_id)
@@ -48,7 +49,7 @@ class DB:
     async def get_user_dict(self, guild_id):
         r = await self.user_dict.find_one({'__id': str(guild_id)})
         if r is None:
-            await self.register_user_dict(guild_id)
+            await self.register_user_dict(str(guild_id))
             return {'__id': str(guild_id)}
         del r['_id']
         return r
@@ -70,6 +71,7 @@ class DB:
             {'__id': str(guild_id)},
             r
         )
+        return True
 
     async def get_guild_setting(self, name, guild_id):
         doc = getattr(self, f'guild_{name}')
@@ -93,3 +95,18 @@ class DB:
             {'id': str(guild_id)},
             {'id': str(guild_id), 'value': value}
         )
+
+    async def get_limit(self, guild_id):
+        r = await self.guild_limit.find_one({'id': str(guild_id)})
+        if r is None:
+            await self.guild_limit.insert_one({'id': str(guild_id), 'limit': 100})
+            return 100
+        return r['limit']
+
+    async def set_limit(self, guild_id, limit):
+        r = await self.get_limit(guild_id)
+        await self.guild_limit.replace_one(
+            {'id': str(guild_id)},
+            {'id': str(guild_id), 'limit': limit}
+        )
+        return r

@@ -20,7 +20,8 @@ class Bard(commands.Bot):
         bot = await self.db.get_guild_setting('bot', guild_id)
         name = await self.db.get_guild_setting('name', guild_id)
         emoji = await self.db.get_guild_setting('emoji', guild_id)
-        self.guild_setting[guild_id] = dict(bot=bot, name=name, emoji=emoji)
+        limit = await self.db.get_limit(guild_id)
+        self.guild_setting[guild_id] = dict(bot=bot, name=name, emoji=emoji, limit=limit)
 
     async def on_ready(self):
         await self.change_presence(activity=discord.Game("Bard - 読み上げBot"))
