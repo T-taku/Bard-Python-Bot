@@ -19,6 +19,12 @@ class Admin(commands.Cog):
             except Exception:
                 pass
 
+    @commands.command()
+    async def admininfo(self, ctx):
+        voice_connects = len(self.bot.voice_hooks)
+        guild_count = len(self.bot.guilds)
+        await ctx.send(f"voice connects: {voice_connects}\nguild count: {guild_count}")
+
 
 def setup(bot):
     return bot.add_cog(Admin(bot))

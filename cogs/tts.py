@@ -1,7 +1,7 @@
 from discord.ext import commands
 import discord
 import re
-from emoji import UNICODE_EMOJI
+import emoji_data_python
 
 
 message_dict = {
@@ -42,9 +42,9 @@ class TTS(commands.Cog):
                 text = re.sub(rf"<:{emoji_name}:[0-9]+>", emoji_name, text)
             else:
                 text = re.sub(rf"<:{emoji_name}:[0-9]+>", "", text)
-                for c in text:
-                    if c in UNICODE_EMOJI:
-                        text = text.replace(c, '')
+                emojis = emoji_data_python.get_emoji_regex().findall(text)
+                for emoji in emojis:
+                    text = text.replace(emoji, '')
 
         for move_emoji_name in re.findall(r"<a:(.+):[0-9]+>", text):
             if self.bot.guild_setting[message.guild.id]['emoji']:

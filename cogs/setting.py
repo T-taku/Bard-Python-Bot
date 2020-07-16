@@ -56,7 +56,8 @@ class VoiceSetting(commands.Cog):
     async def setting(self, ctx):
         await ctx.send(f"botのメッセージを読み上げるか: {self.bot.guild_setting[ctx.guild.id]['bot']}\n"
                        f"名前を読み上げるか: {self.bot.guild_setting[ctx.guild.id]['name']}\n"
-                       f"絵文字を読み上げるか: {self.bot.guild_setting[ctx.guild.id]['emoji']}\n")
+                       f"絵文字を読み上げるか: {self.bot.guild_setting[ctx.guild.id]['emoji']}\n"
+                       f"読み上げ上限文字数: {self.bot.guild_setting[ctx.guild.id]['limit']}文字")
         return
 
     @setting.command()

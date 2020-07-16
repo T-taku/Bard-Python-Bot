@@ -74,12 +74,37 @@ class VoiceServer:
                 self.writer.write(text.encode())
                 await self.writer.drain()
                 data = b''  # TODO: 一気に読み込ませる
+
                 while True:
-                    i = await self.reader.read(1024)
+                    i = await self.reader.read(8192)
                     l = len(i)
                     data += i
-                    if l != 1024:
+                    if l != 8192:
                         break
+
+                base_len = len(data)
+
+                for i in range(5):
+                    if not len(data) % 2:
+                        self.writer.write(b'1')
+                        await self.writer.drain()
+                        if base_len - 5000 <= len(data) <= base_len + 5000:
+                            break
+                        raise Exception('time out')
+
+                    self.writer.write(b'0')
+                    await self.writer.drain()
+                    data = b''
+                    while True:
+                        i = await self.reader.read(8192)
+                        l = len(i)
+                        data += i
+                        if l != 8192:
+                            break
+                else:
+                    self.writer.write(b'1')
+                    await self.writer.drain()
+                    raise Exception('time out')
 
                 while self.voice_client.is_playing():
                     await asyncio.sleep(0.5)

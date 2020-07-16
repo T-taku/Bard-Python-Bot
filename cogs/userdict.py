@@ -1,5 +1,6 @@
 from discord.ext import commands
 import discord
+import json
 from dpybrew.service import Paginator
 
 
@@ -25,7 +26,7 @@ class UserDict(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(name='dict', invoke_without_command=True)
+    @commands.group(name='word', aliases=['dict'], invoke_without_command=True)
     async def userdict(self, ctx):
         d = await self.bot.db.get_user_dict(ctx.guild.id)
         del d['__id']
@@ -33,7 +34,7 @@ class UserDict(commands.Cog):
         p = MyPagenator(self.bot, i, d)
         await p.start(ctx.message)
 
-    @userdict.command()
+    @userdict.command(aliases=['put'])
     async def add(self, ctx, key, *, value):
         if key == "__id":
             await ctx.send('そのkeyは指定できません。')
@@ -41,7 +42,7 @@ class UserDict(commands.Cog):
         await self.bot.db.set_user_dict(ctx.guild.id, key, value)
         await ctx.send('{0}, {1}を{2}として設定しました。'.format(ctx.author.mention, key, value))
 
-    @userdict.command()
+    @userdict.command(aliases=['delete', 'del', 'pop'])
     async def remove(self, ctx, *, key):
         if key == "__id":
             await ctx.send('そのkeyは指定できません。')
