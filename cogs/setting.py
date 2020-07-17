@@ -46,11 +46,11 @@ class VoiceSetting(commands.Cog):
 
     @commands.command()
     async def pitch(self, ctx, pitch: float):
-        if -20.0 <= pitch <= 20.0:
+        if -6.5 <= pitch <= 6.5:
             await self.bot.db.set_user_setting(ctx.author.id, pitch=pitch)
             await ctx.send(f"ピッチの設定を{pitch}に変更しました。")
             return
-        await ctx.send('ピッチは-20.0から20.0の間で設定してください。')
+        await ctx.send('ピッチは-6.5から6.5の間で設定してください。')
 
     @commands.group(invoke_without_command=True, aliases=['pref'])
     async def setting(self, ctx):
