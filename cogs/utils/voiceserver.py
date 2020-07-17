@@ -95,8 +95,6 @@ class VoiceServer:
 
                 for i in range(5):
                     if not len(data) % 2:
-                        self.writer.write(b'1')
-                        await self.writer.drain()
                         if base_len - 5000 <= len(data) <= base_len + 5000:
                             break
                         raise Exception('time out')
@@ -114,6 +112,9 @@ class VoiceServer:
                     self.writer.write(b'1')
                     await self.writer.drain()
                     raise Exception('time out')
+
+                self.writer.write(b'1')
+                await self.writer.drain()
 
                 while self.voice_client.is_playing():
                     await asyncio.sleep(0.5)
