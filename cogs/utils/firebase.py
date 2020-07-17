@@ -3,9 +3,10 @@ from google.cloud.firestore_v1 import Increment
 from functools import partial
 from firebase_admin import credentials
 from firebase_admin import firestore
+import os
 import concurrent.futures
 
-cred = credentials.Certificate("bard-bot-firestore.json")
+cred = credentials.Certificate(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
 firebase_admin.initialize_app(cred)
 
 

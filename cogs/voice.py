@@ -57,6 +57,10 @@ class Voice(commands.Cog):
         if r:
             await self.bot.update_guild_setting(ctx.guild.id)
             await ctx.send("接続しました。")
+            try:
+                await ctx.guild.me.edit(deafen=True)
+            except Exception:
+                pass
 
     @commands.command()
     async def leave(self, ctx):

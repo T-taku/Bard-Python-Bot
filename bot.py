@@ -31,7 +31,7 @@ class Bard(commands.Bot):
         self.guild_setting[guild_id] = dict(bot=bot, name=name, emoji=emoji, limit=limit)
 
     async def on_ready(self):
-        await self.change_presence(activity=discord.Game("Bard - 読み上げBot"))
+        await self.change_presence(activity=discord.Game("bard::help | Bard - 読み上げBot"))
 
     async def on_command_error(self, context, exception):
         if isinstance(exception, commands.CommandNotFound):
