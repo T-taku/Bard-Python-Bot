@@ -4,7 +4,7 @@ import motor.motor_asyncio
 class DB:
     def __init__(self):
         self.client = motor.motor_asyncio.AsyncIOMotorClient()
-        self.db = self.client['bard_test']
+        self.db = self.client['bard']
         self.users = self.db['users']
         self.user_dict = self.db['user_dict']
         self.char_count = self.db['char_count']
