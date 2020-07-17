@@ -12,6 +12,9 @@ class Bard(commands.Bot):
         self.guild_setting = {}
         self.db = DB()
 
+    async def error(self, e):
+        await self.get_channel(733199945930113074).send(e)
+
     async def update_guild_setting(self, guild_id):
         """
         bot, name, emoji

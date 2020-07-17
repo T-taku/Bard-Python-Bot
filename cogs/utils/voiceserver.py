@@ -116,15 +116,17 @@ class VoiceServer:
         except asyncio.exceptions.CancelledError:
             pass
 
-        except audioop.error:
+        except audioop.error as e:
             import traceback
             traceback.print_exc()
+            await self.bot.error(e)
             await self.text_channel.send('内部エラーが発生しました。再接続してください。')
             await self.close(force=True)
 
-        except Exception:
+        except Exception as e:
             import traceback
             traceback.print_exc()
+            await self.bot.error(e)
             await self.text_channel.send('内部エラーが発生しました。再接続してください。')
             await self.close(force=True)
 

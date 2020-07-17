@@ -3,7 +3,7 @@ from discord.ext import commands
 
 bot_invite = "https://discord.com/api/oauth2/authorize?client_id=727687910643466271&permissions=3230720&scope=bot"
 guild_invite = "https://discord.gg/QmCmMtp"
-website = ""
+website = "https://bardbot.net/"
 fields = [
     ["課金方法", f"[こちらのサイト]({website})に登録し、サーバーを選択してからサブスクリプションに登録してください。"],
     ["特殊機能", "`en::`を先頭につけると、英語で読み上げてくれます。"]
@@ -29,7 +29,7 @@ cmds = [
 def get_help_embeds():
     embed = discord.Embed(
         title='Bard - 読み上げBot',
-        description=f"サーバーへは、[`こちら`]({bot_invite})から導入してください。\n[`公式サーバー`]({guild_invite}) [`website`]({website})"
+        description=f"[**` Botの導入URL `**]({bot_invite}) [**` 公式サーバー `**]({guild_invite}) [**` website `**]({website})"
     )
     for field in fields:
         embed.add_field(name=field[0], value=field[1], inline=False)
@@ -44,6 +44,20 @@ def get_help_embeds():
     return embed, embed2
 
 
+def get_do_subscribe_embed():
+    embed = discord.Embed(
+                title='サブスクリプションに登録しませんか？',
+                description='サブスクリプションに登録することで機能を使用可能になります。まず無料の3000文字を試してから、サブスクリプションに登録しましょう。0文字になると、使用できなくなります。'
+            )
+    embed.add_field(
+        name='サブスクリプションの登録方法',
+        value='まず、[Webサイト](https://bardbot.net)に飛び、ユーザー登録をしましょう。\n'
+              '次に、[ギルド一覧](https://bardbot.net/guilds)からサブスクリプションを設定したいギルドを選択します。\n'
+              'その後、カード情報などを入力すれば、登録完了です。'
+    )
+    return embed
+
+
 class Helping(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -53,6 +67,9 @@ class Helping(commands.Cog):
         e1, e2 = get_help_embeds()
         await ctx.send(embed=e1)
         await ctx.send(embed=e2)
+        db_guild = await self.bot.firestore.get_guild(ctx.guild.id)
+        if db_guild['subscribe'] == 0:
+            await ctx.send(embed=get_do_subscribe_embed())
 
 
 def setup(bot):
