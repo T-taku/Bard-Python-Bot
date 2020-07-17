@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 from cogs.utils.firebase import FireStore
 from cogs.utils.db import DB
+import asyncio
+import aiohttp
 
 
 class Bard(commands.Bot):
@@ -11,6 +13,8 @@ class Bard(commands.Bot):
         self.firestore = FireStore(self)
         self.guild_setting = {}
         self.db = DB()
+        self.access_token = None
+        self.loop.create_task(self.access_token_loop())
 
     async def error(self, e):
         await self.get_channel(733199945930113074).send(e)
@@ -34,3 +38,11 @@ class Bard(commands.Bot):
             return
 
         await super().on_command_error(context, exception)
+
+    async def access_token_loop(self):
+        while not self.is_closed():
+            async with aiohttp.ClientSession() as session:
+                async with session.get('http://127.0.0.1:5000') as r:
+                    self.access_token = await r.text()
+
+            await asyncio.sleep(3000)
