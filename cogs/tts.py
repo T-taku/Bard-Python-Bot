@@ -5,14 +5,31 @@ import emoji_data_python
 
 
 class TTSRequest:
-    def __init__(self, text, message, lang, voice, speed, pitch):
+    def __init__(self, bot, text, message, lang, voice, speed, pitch):
         self.text = text
+        self.bot = bot
         self.guild = message.guild
         self.message = message
         self.lang = lang
         self.voice = voice
         self.speed = speed
         self.pitch = pitch
+
+    async def convert_username(self, before_id):
+        if before_id != self.message.author.id:
+            name = self.message.author.nick or self.message.author.name
+            if self.bot.guild_setting[self.guild.id]['name']:
+                self.text = name + "、" + self.text
+
+        # ユーザー辞書
+        d = await self.bot.db.get_user_dict(self.guild.id)
+        del d['__id']
+        for key, value in d.items():
+            self.text = self.text.replace(key, value)
+
+        # 以下略
+        if len(self.text) > self.bot.guild_setting[self.guild.id]['limit']:
+            self.text = self.text[:self.bot.guild_setting[self.guild.id]['limit']] + '、以下略'
 
 
 message_dict = {
@@ -51,11 +68,10 @@ class TTS(commands.Cog):
         text = await self.make_text(text, message)
         setting = await self.bot.db.get_user_setting(message.author.id)
         await self.bot.voice_hooks[message.channel.id].put(
-            TTSRequest(text, message, lang, setting['voice'], setting['speed'], setting['pitch'])
+            TTSRequest(self.bot, text, message, lang, setting['voice'], setting['speed'], setting['pitch'])
         )
 
     async def make_text(self, text, message):
-        guild = message.guild
         text = re.sub(r"https?://[\w!?/+\-_~;.,*&@#$%()'[\]]+", "URL省略、", text)
         for emoji_name in re.findall(r"<:(.+):[0-9]+>", text):
             if self.bot.guild_setting[message.guild.id]['emoji']:
@@ -74,27 +90,12 @@ class TTS(commands.Cog):
 
         text = re.sub(r"([^a-zA-Z])([w]+)([^a-zA-Z])", r"\1、わら、\3", text)
         text = re.sub(r"^([w]+)$", "わら", text)
+        text = re.sub(r"^[笑]+$", "わら", text)
         text = re.sub(r"([^a-zA-Z])([w]+)$", r"\1、わら", text)
 
         # bot辞書
         for key, value in message_dict.items():
             text = text.replace(key, value)
-
-        # 名前
-        if self.bot.voice_hooks[message.channel.id].before_user_id != message.author.id:
-            name = message.author.nick or message.author.name
-            if self.bot.guild_setting[guild.id]['name']:
-                text = name + "、" + text
-
-        # ユーザー辞書
-        d = await self.bot.db.get_user_dict(guild.id)
-        del d['__id']
-        for key, value in d.items():
-            text = text.replace(key, value)
-
-        # 以下略
-        if len(text) > self.bot.guild_setting[guild.id]['limit']:
-            text = text[:self.bot.guild_setting[guild.id]['limit']] + '、以下略'
 
         return text
 

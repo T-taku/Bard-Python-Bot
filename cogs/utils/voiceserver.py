@@ -43,11 +43,12 @@ class VoiceServer:
                     await self.close(force=True)
                     return
 
+                await req.convert_username(self.before_user_id)
+                data = await request_tts(self.bot.access_token, self.session, req)
+                self.before_user_id = req.message.author.id
                 while self.voice_client.is_playing():
                     await asyncio.sleep(0.5)
                 await asyncio.sleep(0.2)
-
-                data = await request_tts(self.bot.access_token, self.session, req)
 
                 source = discord.PCMAudio(io.BytesIO(audioop.tostereo(data, 2, 1, 1)))
                 self.voice_client.play(source)
