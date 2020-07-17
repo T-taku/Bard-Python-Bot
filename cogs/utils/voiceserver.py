@@ -47,7 +47,7 @@ class VoiceServer:
                 user = item[2]
                 guild = user.guild
                 name = user.nick or user.name
-                if self.before_user_id != user.id:
+                if self.before_user_id != user.id and item[3] == 'ja':
                     if self.bot.guild_setting[guild.id]['name']:
                         text = name+"、" + text
                 self.before_user_id = user.id
@@ -58,9 +58,18 @@ class VoiceServer:
                 for key, value in d.items():
                     text = text.replace(key, value)
 
-                text = text + "。"
+                if item[3] == 'ja':
+                    text = text + "。"
+                else:
+                    text += "."
+
+                def ikaryaku():
+                    if item[3] == 'ja':
+                        return '、以下略。'
+                    return '.'
+
                 if len(text) > self.bot.guild_setting[guild.id]['limit']:
-                    text = text[:self.bot.guild_setting[guild.id]['limit']] + "、以下略。"
+                    text = text[:self.bot.guild_setting[guild.id]['limit']] + ikaryaku()
                 if not await self.bot.firestore.spend_char(guild.id, len(text)):
                     await self.text_channel.send("申し訳ございません。今月の利用可能文字数を超えてしまいました。"
                                                  "\nまだご利用になりたい場合は、公式サイトより文字数を購入してください。")
