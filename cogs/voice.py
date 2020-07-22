@@ -44,6 +44,10 @@ class Voice(commands.Cog):
         except discord.errors.ClientException:
             await ctx.send('すでに接続されています。')
             return
+        except Exception as e:
+            print(e)
+            await ctx.send('予期せぬエラーが発生しました。')
+            return
 
         g = await self.bot.firestore.get_guild(ctx.guild.id)
         if g['count'] == 0:
