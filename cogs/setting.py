@@ -20,7 +20,7 @@ class VoiceSetting(commands.Cog):
         """現在の音声設定を表示 voice_typeを指定すると変更"""
         if voice_type is None:
             setting = await self.bot.db.get_user_setting(str(ctx.author.id))
-            embed = discord.Embed(title=f"{ctx.author.mention}さんの現在の音声設定")
+            embed = discord.Embed(title=f"{ctx.author}さんの現在の音声設定")
             embed.add_field(name="音声の種類", value=f"{setting['voice']}")
             embed.add_field(name="スピード", value=f"{setting['speed']}")
             embed.add_field(name="ピッチ", value=f"{setting['pitch']}")
