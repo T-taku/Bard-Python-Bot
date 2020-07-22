@@ -1,6 +1,7 @@
 from discord.ext import commands
 from .utils.voiceserver import VoiceServer
 import discord
+import asyncio
 
 
 class Voice(commands.Cog):
@@ -44,9 +45,11 @@ class Voice(commands.Cog):
         except discord.errors.ClientException:
             await ctx.send('すでに接続されています。')
             return
+        except asyncio.exceptions.TimeoutError:
+            await ctx.send('接続できませんでした。ユーザー数が埋まっている可能性があります。再度接続してください。')
+            return
         except Exception as e:
-            print(e)
-            await ctx.send('予期せぬエラーが発生しました。')
+            await ctx.send('予期せぬエラーが発生しました。再度接続してください。')
             return
 
         g = await self.bot.firestore.get_guild(ctx.guild.id)
