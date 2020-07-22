@@ -41,7 +41,8 @@ class Voice(commands.Cog):
 
         channel = voice_state.channel
         try:
-            voice_client = await channel.connect()
+            async with channel.typing():
+                voice_client = await channel.connect(timeout=5.0)
         except discord.errors.ClientException:
             await ctx.send('すでに接続されています。')
             return
@@ -49,7 +50,7 @@ class Voice(commands.Cog):
             await ctx.send('接続できませんでした。ユーザー数が埋まっている可能性があります。再度接続してください。')
             return
         except Exception as e:
-            await ctx.send('予期せぬエラーが発生しました。再度接続してください。')
+            await ctx.send(f'予期せぬエラーが発生しました。再度接続してください。エラー:{e}')
             return
 
         g = await self.bot.firestore.get_guild(ctx.guild.id)
