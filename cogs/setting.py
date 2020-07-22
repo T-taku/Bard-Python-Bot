@@ -2,9 +2,9 @@ from discord.ext import commands
 import discord
 
 voice_setting = """
-`voice <音声の種類(A,B,C,Dのいずれか)>` で音声の種類を変更できます。
-`speed <スピード>` でスピードの変更ができます。デフォルトは1.0です。
-`pitch <ピッチ>` でピッチの変更ができます。デフォルトは0.0です。
+`::voice <音声の種類(A,B,C,Dのいずれか)>` で音声の種類を変更できます。
+`::speed <スピード>` でスピードの変更ができます。デフォルトは1.0です。
+`::pitch <ピッチ>` でピッチの変更ができます。デフォルトは0.0です。
 """
 
 
@@ -20,7 +20,7 @@ class VoiceSetting(commands.Cog):
         """現在の音声設定を表示 voice_typeを指定すると変更"""
         if voice_type is None:
             setting = await self.bot.db.get_user_setting(str(ctx.author.id))
-            embed = discord.Embed(title="現在の音声設定")
+            embed = discord.Embed(title=f"{ctx.author.mention}さんの現在の音声設定")
             embed.add_field(name="音声の種類", value=f"{setting['voice']}")
             embed.add_field(name="スピード", value=f"{setting['speed']}")
             embed.add_field(name="ピッチ", value=f"{setting['pitch']}")
@@ -34,13 +34,13 @@ class VoiceSetting(commands.Cog):
 
         # タイプ設定の処理
         await self.bot.db.set_user_setting(ctx.author.id, voice=voice_type.upper())
-        await ctx.send(f'声の設定を{voice_type}に変更しました。')
+        await ctx.send(f'{ctx.author.mention}, 声の設定を{voice_type}に変更しました。')
 
     @commands.command()
     async def speed(self, ctx, speed: float):
         if 0.25 <= speed <= 4.0:
             await self.bot.db.set_user_setting(ctx.author.id, speed=speed)
-            await ctx.send(f"スピードの設定を{speed}に変更しました。")
+            await ctx.send(f"{ctx.author.mention}, スピードの設定を{speed}に変更しました。")
             return
         await ctx.send("スピードは0.5から4.0の間で設定してください。")
 
@@ -48,7 +48,7 @@ class VoiceSetting(commands.Cog):
     async def pitch(self, ctx, pitch: float):
         if -6.5 <= pitch <= 6.5:
             await self.bot.db.set_user_setting(ctx.author.id, pitch=pitch)
-            await ctx.send(f"ピッチの設定を{pitch}に変更しました。")
+            await ctx.send(f"{ctx.author.mention}, ピッチの設定を{pitch}に変更しました。")
             return
         await ctx.send('ピッチは-6.5から6.5の間で設定してください。')
 

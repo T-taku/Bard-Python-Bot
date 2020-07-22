@@ -54,10 +54,9 @@ class TTS(commands.Cog):
             return
         if not message.content:
             return
-        if message.content.startswith("bard::"):
+        if message.content.startswith(("bard::", "::", ";")):
             return
-        if message.content.startswith(";"):
-            return
+
         text = message.clean_content
         lang = 'ja'
         if re.match("([a-zA-Z]{2})::(.+)", text):

@@ -8,7 +8,7 @@ import aiohttp
 
 class Bard(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=commands.when_mentioned_or("bard::"), help_command=None)
+        super().__init__(command_prefix=commands.when_mentioned_or(["bard::", "::"]), help_command=None)
         self.voice_hooks = {}
         self.firestore = FireStore(self)
         self.guild_setting = {}
@@ -31,7 +31,7 @@ class Bard(commands.Bot):
         self.guild_setting[guild_id] = dict(bot=bot, name=name, emoji=emoji, limit=limit)
 
     async def on_ready(self):
-        await self.change_presence(activity=discord.Game("bard::help | Bard - 読み上げBot"))
+        await self.change_presence(activity=discord.Game("::help | Bard - 読み上げBot"))
 
     async def on_command_error(self, context, exception):
         if isinstance(exception, commands.CommandNotFound):

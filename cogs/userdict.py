@@ -1,6 +1,5 @@
 from discord.ext import commands
 import discord
-import json
 from dpybrew.service import Paginator
 
 
