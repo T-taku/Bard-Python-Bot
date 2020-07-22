@@ -6,9 +6,15 @@ import asyncio
 import aiohttp
 
 
+def _prefix_callable(bot, msg):
+    user_id = bot.user.id
+    base = [f'<@!{user_id}> ', f'<@{user_id}> ', '::', 'bard::']
+    return base
+
+
 class Bard(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=commands.when_mentioned_or(["bard::", "::"]), help_command=None)
+        super().__init__(command_prefix=_prefix_callable, help_command=None)
         self.voice_hooks = {}
         self.firestore = FireStore(self)
         self.guild_setting = {}
