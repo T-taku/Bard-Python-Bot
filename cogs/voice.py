@@ -41,7 +41,7 @@ class Voice(commands.Cog):
 
         channel = voice_state.channel
         try:
-            async with channel.typing():
+            async with ctx.channel.typing():
                 voice_client = await channel.connect(timeout=5.0)
         except discord.errors.ClientException:
             await ctx.send('すでに接続されています。')
