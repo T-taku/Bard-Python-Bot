@@ -2,6 +2,7 @@ from discord.ext import commands
 from .utils.voiceserver import VoiceServer
 import discord
 import asyncio
+import datetime
 
 
 class Voice(commands.Cog):
@@ -16,13 +17,17 @@ class Voice(commands.Cog):
     async def on_voice_state_update(self, member, before, after):
         if member.id != self.bot.user.id:
             return
-        if before.channel and not after.channel:
+        if before.channel and after.channel is None:
+
             t = None
             for key, server in self.bot.voice_hooks.items():
                 if server.voice_channel.id == before.channel.id:
                     t = server
                     break
             if t is None:
+                return
+            if self.bot.guild_setting[member.guild.id]['keep']:
+                await t.reconnect(before.channel)
                 return
             await t.close(True)
             await t.text_channel.send('強制的に落とされたため、終了します。')

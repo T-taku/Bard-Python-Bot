@@ -32,6 +32,15 @@ class VoiceServer:
         self.session = aiohttp.ClientSession()
         return True
 
+    async def reconnect(self, channel):
+        try:
+            state = await channel.connect(timeout=5)
+            self.voice_channel = channel
+            self.voice_client = state
+        except discord.ClientException:
+            await asyncio.sleep(5)
+            await self.reconnect(channel)
+
     async def loop(self):
         try:
             while not self.bot.is_closed():

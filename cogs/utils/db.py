@@ -12,6 +12,7 @@ class DB:
         self.guild_bot = self.db['guild_bot']
         self.guild_name = self.db['guild_name']
         self.guild_limit = self.db['guild_limit']
+        self.guild_keep = self.db['guild_keep']
 
     async def get_user_setting(self, user_id):
         user_id = str(user_id)
@@ -80,6 +81,8 @@ class DB:
             if name == 'emoji':
                 return True
             elif name == 'name':
+                return True
+            elif name == 'keep':
                 return True
             return False
 

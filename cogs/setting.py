@@ -57,7 +57,8 @@ class VoiceSetting(commands.Cog):
         await ctx.send(f"botのメッセージを読み上げるか: {self.bot.guild_setting[ctx.guild.id]['bot']}\n"
                        f"名前を読み上げるか: {self.bot.guild_setting[ctx.guild.id]['name']}\n"
                        f"絵文字を読み上げるか: {self.bot.guild_setting[ctx.guild.id]['emoji']}\n"
-                       f"読み上げ上限文字数: {self.bot.guild_setting[ctx.guild.id]['limit']}文字")
+                       f"読み上げ上限文字数: {self.bot.guild_setting[ctx.guild.id]['limit']}文字\n"
+                       f"再接続するか: {self.bot.guild_setting[ctx.guild.id]['keep']}")
         return
 
     @setting.command()
@@ -89,6 +90,12 @@ class VoiceSetting(commands.Cog):
         r = await self.bot.db.set_limit(ctx.guild.id, limit)
         await self.bot.update_guild_setting(ctx.guild.id)
         await ctx.send(f'最大読み上げ文字数を{r}から{limit}に変更しました。')
+
+    @setting.command(name="keep-alive")
+    async def keep_alive(self, ctx):
+        r = await self.bot.db.get_guild_setting('keep', ctx.guild.id)
+        await self.bot.db.set_guild_setting('keep', ctx.guild.id, not r)
+        await self.bot.update_guild_setting(ctx.guild.id)
 
 
 def setup(bot):

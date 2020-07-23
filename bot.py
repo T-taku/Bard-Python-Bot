@@ -4,11 +4,12 @@ from cogs.utils.firebase import FireStore
 from cogs.utils.db import DB
 import asyncio
 import aiohttp
+import os
 
 
 def _prefix_callable(bot, msg):
     user_id = bot.user.id
-    base = [f'<@!{user_id}> ', f'<@{user_id}> ', '::', 'bard::']
+    base = [f'<@!{user_id}> ', f'<@{user_id}> ', os.environ.get('prefix', '::'), 'bard::']
     return base
 
 
@@ -27,17 +28,18 @@ class Bard(commands.Bot):
 
     async def update_guild_setting(self, guild_id):
         """
-        bot, name, emoji
+        bot, name, emoji, keep, limit
         :return:
         """
         bot = await self.db.get_guild_setting('bot', guild_id)
         name = await self.db.get_guild_setting('name', guild_id)
         emoji = await self.db.get_guild_setting('emoji', guild_id)
+        keep = await self.db.get_guild_setting('keep', guild_id)
         limit = await self.db.get_limit(guild_id)
-        self.guild_setting[guild_id] = dict(bot=bot, name=name, emoji=emoji, limit=limit)
+        self.guild_setting[guild_id] = dict(bot=bot, name=name, emoji=emoji, limit=limit, keep=keep)
 
     async def on_ready(self):
-        await self.change_presence(activity=discord.Game("::help | Bard - 読み上げBot"))
+        await self.change_presence(activity=discord.Game(os.environ.get('prefix', '::') + "help | Bard - 読み上げBot"))
 
     async def on_command_error(self, context, exception):
         if isinstance(exception, commands.CommandNotFound):

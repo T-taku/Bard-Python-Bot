@@ -6,7 +6,8 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def root():
-    return make_response(subprocess.check_output(["gcloud", "auth", "application-default", "print-access-token"]).decode(), 200)
+    r = subprocess.check_output(["gcloud", "auth", "application-default", "print-access-token"]).decode()
+    return make_response(r, 200)
 
 
 if __name__ == '__main__':
